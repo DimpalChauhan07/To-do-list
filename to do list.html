@@ -22,7 +22,7 @@
       border-radius: 15px;
       width: 100%;
       max-width: 400px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
     }
 
     h1 {
@@ -93,10 +93,11 @@
 
 <div class="todo-container">
   <h1>My To-Do List</h1>
-  <div>
+  <form onsubmit="addTask(); return false;">
+    <label for="taskInput" style="display: none;">New Task</label>
     <input type="text" id="taskInput" placeholder="Enter a new task..." />
-    <button onclick="addTask()">Add</button>
-  </div>
+    <button type="submit">Add</button>
+  </form>
   <ul id="taskList"></ul>
 </div>
 
@@ -104,7 +105,7 @@
   let tasks = [];
 
   window.onload = function () {
-    const storedTasks = localStorage.getItem("todoTasks");
+    const storedTasks = localStorage.getItem("todoTasks_DimpalChauhan07");
     if (storedTasks) {
       tasks = JSON.parse(storedTasks);
       renderTasks();
@@ -114,12 +115,14 @@
   function addTask() {
     const input = document.getElementById("taskInput");
     const taskText = input.value.trim();
-    if (taskText) {
-      tasks.push({ text: taskText, completed: false });
-      saveTasks();
-      renderTasks();
-      input.value = "";
+    if (!taskText) {
+      alert("Please enter a task!");
+      return;
     }
+    tasks.push({ text: taskText, completed: false });
+    saveTasks();
+    renderTasks();
+    input.value = "";
   }
 
   function toggleTaskCompletion(index) {
@@ -135,7 +138,7 @@
   }
 
   function saveTasks() {
-    localStorage.setItem("todoTasks", JSON.stringify(tasks));
+    localStorage.setItem("todoTasks_DimpalChauhan07", JSON.stringify(tasks));
   }
 
   function renderTasks() {
@@ -147,17 +150,23 @@
 
       li.innerHTML = `
         <input type="checkbox" ${task.completed ? "checked" : ""} onclick="toggleTaskCompletion(${index})" />
-        <span style="flex: 1; margin: 0 10px; text-decoration: ${task.completed ? "line-through" : "none"};">${task.text}</span>
+        <span style="flex: 1; margin: 0 10px; text-decoration: ${task.completed ? "line-through" : "none"};">${sanitizeHTML(task.text)}</span>
         <button class="delete-btn" onclick="deleteTask(${index})">Delete</button>
       `;
 
       taskList.appendChild(li);
 
       // Trigger animation
-      requestAnimationFrame(() => {
+      setTimeout(() => {
         li.classList.add("show");
-      });
+      }, 0);
     });
+  }
+
+  function sanitizeHTML(str) {
+    const temp = document.createElement("div");
+    temp.textContent = str;
+    return temp.innerHTML;
   }
 </script>
 
